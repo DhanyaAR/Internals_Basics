@@ -1,0 +1,11 @@
+{
+    "original_data_rows": 25,
+    "new_data_rows": 20,
+    "combined_data_rows": 45,
+    "champion_rmse": 9.084133049563922,
+    "retrained_rmse": 6.238366267398693,
+    "improvement": 2.8457667821652297,
+    "min_improvement_threshold": 1.0,
+    "action": "promoted",
+    "comparison_metric": "rmse"
+}

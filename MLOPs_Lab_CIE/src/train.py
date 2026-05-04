@@ -2,6 +2,7 @@ import pandas as pd
 import numpy as np
 import json
 import os
+import joblib
 
 from sklearn.model_selection import train_test_split
 from sklearn.linear_model import Ridge
@@ -24,40 +25,68 @@ mlflow.set_experiment("gallerypulse-auction-price-lakhs")
 
 results = []
 
+# Function to train, evaluate, log, and return model
 def evaluate_and_log(model, name):
     with mlflow.start_run(run_name=name):
+
         # Train
         model.fit(X_train, y_train)
-        
-        # Predict & Metrics
+
+        # Predict
         preds = model.predict(X_test)
+
+        # Metrics
         mae = mean_absolute_error(y_test, preds)
         rmse = np.sqrt(mean_squared_error(y_test, preds))
         r2 = r2_score(y_test, preds)
 
-        # 1. LOG ALL HYPERPARAMETERS (Crucial for the "All params" condition)
+        # Log ALL hyperparameters
         mlflow.log_params(model.get_params())
-        
-        # 2. LOG METRICS
-        mlflow.log_metrics({"mae": mae, "rmse": rmse, "r2": r2})
-        
-        # 3. SET TAG
+
+        # Log metrics
+        mlflow.log_metrics({
+            "mae": mae,
+            "rmse": rmse,
+            "r2": r2
+        })
+
+        # Tag
         mlflow.set_tag("experiment_type", "baseline_comparison")
 
         return {
             "name": name,
             "mae": mae,
             "rmse": rmse,
-            "r2": r2
+            "r2": r2,
+            "model": model   # keep model for saving later
         }
 
-# Execute Runs
-results.append(evaluate_and_log(Ridge(), "Ridge"))
-results.append(evaluate_and_log(GradientBoostingRegressor(random_state=42), "GradientBoosting"))
+# Run both models
+ridge_result = evaluate_and_log(Ridge(), "Ridge")
+gb_result = evaluate_and_log(
+    GradientBoostingRegressor(random_state=42),
+    "GradientBoosting"
+)
 
-# Select best based on RMSE (Lower is better)
+results.append(ridge_result)
+results.append(gb_result)
+
+# Select best model by RMSE
 best = min(results, key=lambda x: x["rmse"])
 
+# Save best model
+os.makedirs("models", exist_ok=True)
+
+if best["name"] == "Ridge":
+    joblib.dump(ridge_result["model"], "models/model.pkl")
+else:
+    joblib.dump(gb_result["model"], "models/model.pkl")
+
+# Remove model objects before saving JSON
+for r in results:
+    r.pop("model")
+
+# Prepare output JSON
 output = {
     "experiment_name": "gallerypulse-auction-price-lakhs",
     "models": results,
@@ -66,7 +95,10 @@ output = {
     "best_metric_value": best["rmse"]
 }
 
-# Save output
+# Save results
 os.makedirs("results", exist_ok=True)
+
 with open("results/step1_s1.json", "w") as f:
     json.dump(output, f, indent=4)
+
+print("✅ Step 1 completed: Model trained, MLflow logged, model saved.")

@@ -1,0 +1,12 @@
+{
+    "image_name": "gallerypulse-predictor",
+    "image_tag": "v1",
+    "base_image": "python:3.10-slim",
+    "test_input": {
+        "artist_reputation_score": 4.5,
+        "artwork_age_years": 89,
+        "medium_type_index": 3,
+        "exhibition_count": 11
+    },
+    "prediction": 52.28329641673553
+}

@@ -1,0 +1,13 @@
+{
+    "search_type": "random",
+    "n_folds": 5,
+    "total_trials": 10,
+    "best_params": {
+        "n_estimators": 50,
+        "max_depth": 3,
+        "learning_rate": 0.05
+    },
+    "best_mae": 13.05999867035851,
+    "best_cv_mae": 16.137905984273317,
+    "parent_run_name": "tuning-gallerypulse"
+}

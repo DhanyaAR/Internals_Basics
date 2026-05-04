@@ -1,0 +1,20 @@
+{
+    "experiment_name": "gallerypulse-auction-price-lakhs",
+    "models": [
+        {
+            "name": "Ridge",
+            "mae": 7.702915800509497,
+            "rmse": 9.084133049563922,
+            "r2": -0.4425576065651968
+        },
+        {
+            "name": "GradientBoosting",
+            "mae": 13.506666771882726,
+            "rmse": 14.638554681459254,
+            "r2": -2.745955302246305
+        }
+    ],
+    "best_model": "Ridge",
+    "best_metric_name": "rmse",
+    "best_metric_value": 9.084133049563922
+}
